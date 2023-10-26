@@ -1,19 +1,29 @@
 package gui;
 
+import controller.SeleccionController;
+import model.data.DBConnector;
+import model.data.DBGenerator;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class VentanaMenu {
     private JFrame frame;
     private JPanel panel;
 
-    public VentanaMenu() {
+    public VentanaMenu(SeleccionController controller) {
         frame = new JFrame("Ventana con botones");
         panel = new JPanel();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        agregarBotones();
+        agregarBotones(controller);
         agregarSalir();
 
         frame.add(panel);
@@ -21,7 +31,7 @@ public class VentanaMenu {
         frame.setVisible(true);
     }
 
-    private void agregarBotones() {
+    private void agregarBotones(SeleccionController controller) {
         JButton agregarSeleccion = new JButton("Agregar Selección");
         JButton buscarSeleccion = new JButton("Buscar Selección");
         JButton agregarJugador = new JButton("Agregar Jugador");
@@ -32,7 +42,29 @@ public class VentanaMenu {
         panel.add(agregarJugador);
         panel.add(buscarJugador);
 
-        // Aquí puedes agregar ActionListener para los botones si deseas manejar eventos específicos para cada botón
+        agregarJugador.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VentanaAgregarJugador ventanaAgregarJugador = new VentanaAgregarJugador(controller);
+            }
+        });
+
+        buscarJugador.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VentanaBuscarJugador ventanaBuscarJugador = new VentanaBuscarJugador(controller);
+            }
+        });
+
+        agregarSeleccion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VentanaAgregarSeleccion ventanaAgregarSeleccion = new VentanaAgregarSeleccion(controller);
+            }
+        });
+
+        buscarSeleccion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VentanaBuscarSeleccion ventanaBuscarSeleccion = new VentanaBuscarSeleccion(controller);
+            }
+        });
     }
 
     private void agregarSalir() {
@@ -46,6 +78,14 @@ public class VentanaMenu {
     }
 
     public static void main(String[] args) {
-        new VentanaMenu();
+        String nombreBD = "BD";
+        String usuario = "root";
+        String password = "";
+        DSLContext query = DBConnector.createDSLContext(nombreBD, usuario, password);
+        DBGenerator.iniciarBD(nombreBD);
+
+        SeleccionController controller = new SeleccionController(query);
+        VentanaMenu ventanaMenu = new VentanaMenu(controller);
     }
+
 }

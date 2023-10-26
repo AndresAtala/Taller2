@@ -5,8 +5,6 @@ import model.Seleccion;
 import model.data.dao.SeleccionDAO;
 import model.data.dao.JugadorDAO;
 import org.jooq.DSLContext;
-import java.util.List;
-import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 
@@ -19,9 +17,8 @@ public class SeleccionController {
 
     public SeleccionController(DSLContext query) {
         this.query = query;
-        this.SeleccionDAO = new SeleccionDAO(query);
+        this.seleccionDAO = new SeleccionDAO();
     }
-
     public void agregarSeleccion(String nombre, int RankingFifa, int ID, String Jugadores) {
         Seleccion nuevaSeleccion = new Seleccion(nombre, RankingFifa, ID, Jugadores);
         SeleccionDAO.agregarSeleccion(query, nuevaSeleccion);
@@ -47,7 +44,7 @@ public class SeleccionController {
             return seleccion;
         }
     }
-    public static Seleccion buscarJugador(DSLContext query, Object nombreJugador) {
+    public static Jugador buscarJugador(DSLContext query, Object nombreJugador) {
         Result<Record> resultados = query.select().from(table("Jugador")).where(field("nombre").eq(nombreJugador)).fetch();
 
         if (resultados.isEmpty()) {
@@ -57,9 +54,10 @@ public class SeleccionController {
             String nombre = record.get("nombre", String.class);
             int numero = record.get("numero", Integer.class);
             String posicion= record.get("posicion", String.class);
-            String Seleccion = record.get("seleccion", String.class);
-            Jugador Jugador = new Jugador(nombre, numero, posicion, Seleccion);
-            return Jugador;
+            String seleccion = record.get("seleccion", String.class);
+            Jugador jugador = new Jugador(nombre, numero, posicion, seleccion);
+            return jugador;
         }
     }
+
 }
